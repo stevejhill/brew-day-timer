@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
 import StepAdder from './StepAdder';
-import {Button, Table} from 'react-bootstrap';
+import {Navbar, Nav, NavDropdown, MenuItem, Panel, Button, Table} from 'react-bootstrap';
 
 
 class App extends Component {
@@ -29,52 +29,65 @@ class App extends Component {
   }
 
   onStepSubmit(step) {
-    this.state.steps.push(step);
+    let currentIndex = this.state.steps.length + 1;
+    this.state.steps.push({key:currentIndex, type:step.type, name:step.name, time:step.time});
   }
 
   render() {
     return (
       <div className="App">
-        <Button onClick={this.handleViewAddStep} > 
-          Add Step
-        </Button>
+        <NavigationBar addStepAction={this.handleViewAddStep} />
         {this.state.showAddStep && <StepAdder onCloseClick={this.handleCloseViewAddStep} onStepSubmit={this.onStepSubmit} />}
-        {this.state.steps.length && <GetSteps />}
+        {this.state.steps.length && <GetSteps steps={this.state.steps} />}
       </div>
     );
   }
 }
 
 function GetSteps(props) {
-    return (<Table striped bordered condensed hover>
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Username</th>
+   let rows = props.steps.map((step) => (
+     <tr key={step.key}>
+        <td>{step.key}</td>
+        <td>{step.type}</td>
+        <td>{step.name}</td>
+        <td>{step.time}</td>
       </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>1</td>
-        <td>Mark</td>
-        <td>Otto</td>
-        <td>@mdo</td>
-      </tr>
-      <tr>
-        <td>2</td>
-        <td>Jacob</td>
-        <td>Thornton</td>
-        <td>@fat</td>
-      </tr>
-      <tr>
-        <td>3</td>
-        <td colSpan="2">Larry the Bird</td>
-        <td>@twitter</td>
-      </tr>
-    </tbody>
-  </Table>);
-  }
+   ))
+    return (
+    <Panel>
+    <div className="table-responsive">
+      <Table striped bordered condensed hover>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>type</th>
+          <th>name</th>
+          <th>time</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows}
+      </tbody>
+    </Table>
+  </div>
+  </Panel>);
+}
+
+function NavigationBar(props) {
+  return (<Navbar>
+    <Navbar.Header>
+      <Navbar.Brand>
+        Brew Day Timer
+      </Navbar.Brand>
+    </Navbar.Header>
+    <Nav>
+      <NavDropdown eventKey={1}  title="Action" id="basic-nav-dropdown">
+        <MenuItem eventKey={1.1} onClick={props.addStepAction}>Add Brew Step</MenuItem>
+        <MenuItem divider />
+        <MenuItem eventKey={1.2}>Start Brew Day</MenuItem>
+      </NavDropdown>  
+    </Nav>
+  </Navbar>);
+}
 
 export default App;
