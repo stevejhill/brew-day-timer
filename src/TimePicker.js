@@ -2,16 +2,14 @@ import React from 'react';
 import { FormControl } from 'react-bootstrap'
 
 export default class TimePicker extends React.Component {
-  
-	render = () => {
+
+    render = () => {
         let hours = [];
         let minutes = [];
         let seconds = [];
-        for(let i = 0; i < 100; i++)
-        {
+        for (let i = 0; i < 100; i++) {
             hours.push(i);
-            if(i < 60)
-            {
+            if (i < 60) {
                 minutes.push(i);
                 seconds.push(i);
             }
@@ -22,7 +20,7 @@ export default class TimePicker extends React.Component {
             </option>
         ));
         return <FormControl componentClass="select" bsClass="col-xs-1">
-                  {hoursOptions}
-               </FormControl>;
-  };
+            {hoursOptions}
+        </FormControl>;
+    };
 }

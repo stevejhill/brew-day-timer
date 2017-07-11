@@ -1,36 +1,39 @@
 import React, { Component } from 'react';
 import './App.css';
 import StepAdder from './StepAdder';
-import {Navbar, Nav, NavDropdown, MenuItem, Panel, Button, Table} from 'react-bootstrap';
+import StepTimer from './StepTimer';
+import { Navbar, Nav, NavDropdown, MenuItem, Panel, Table } from 'react-bootstrap';
 
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.state = { steps : [],
-                   showAddStep : false };
+    this.state = {
+      steps: [],
+      showAddStep: false 
+    };
     this.handleViewAddStep = this.handleViewAddStep.bind(this);
     this.handleCloseViewAddStep = this.handleCloseViewAddStep.bind(this);
     this.onStepSubmit = this.onStepSubmit.bind(this);
   }
-  
+
   handleViewAddStep() {
     this.setState((prevState) => ({
-    	steps : prevState.steps,
-      showAddStep : true
+      steps: prevState.steps,
+      showAddStep: true
     }));
   }
 
   handleCloseViewAddStep() {
     this.setState((prevState) => ({
-    	steps : prevState.steps,
-      showAddStep : false
+      steps: prevState.steps,
+      showAddStep: false
     }));
   }
 
   onStepSubmit(step) {
     let currentIndex = this.state.steps.length + 1;
-    this.state.steps.push({key:currentIndex, type:step.type, name:step.name, time:step.time});
+    this.state.steps.push({ key: currentIndex, type: step.type, name: step.name, time: step.time });
   }
 
   render() {
@@ -38,39 +41,40 @@ class App extends Component {
       <div className="App">
         <NavigationBar addStepAction={this.handleViewAddStep} />
         {this.state.showAddStep && <StepAdder onCloseClick={this.handleCloseViewAddStep} onStepSubmit={this.onStepSubmit} />}
-        {this.state.steps.length && <GetSteps steps={this.state.steps} />}
+        {this.state.steps.length > 0 && <GetSteps steps={this.state.steps} />}
+        <StepTimer startSeconds={100} stepName='step name' />
       </div>
     );
   }
 }
 
 function GetSteps(props) {
-   let rows = props.steps.map((step) => (
-     <tr key={step.key}>
-        <td>{step.key}</td>
-        <td>{step.type}</td>
-        <td>{step.name}</td>
-        <td>{step.time}</td>
-      </tr>
-   ))
-    return (
+  let rows = props.steps.map((step) => (
+    <tr key={step.key}>
+      <td>{step.key}</td>
+      <td>{step.type}</td>
+      <td>{step.name}</td>
+      <td>{step.time}</td>
+    </tr>
+  ))
+  return (
     <Panel>
-    <div className="table-responsive">
-      <Table striped bordered condensed hover>
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>type</th>
-          <th>name</th>
-          <th>time</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows}
-      </tbody>
-    </Table>
-  </div>
-  </Panel>);
+      <div className="table-responsive">
+        <Table striped bordered condensed hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>type</th>
+              <th>name</th>
+              <th>time</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows}
+          </tbody>
+        </Table>
+      </div>
+    </Panel>);
 }
 
 function NavigationBar(props) {
@@ -81,11 +85,11 @@ function NavigationBar(props) {
       </Navbar.Brand>
     </Navbar.Header>
     <Nav>
-      <NavDropdown eventKey={1}  title="Action" id="basic-nav-dropdown">
+      <NavDropdown eventKey={1} title="Actions" id="basic-nav-dropdown">
         <MenuItem eventKey={1.1} onClick={props.addStepAction}>Add Brew Step</MenuItem>
         <MenuItem divider />
         <MenuItem eventKey={1.2}>Start Brew Day</MenuItem>
-      </NavDropdown>  
+      </NavDropdown>
     </Nav>
   </Navbar>);
 }

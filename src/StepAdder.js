@@ -1,66 +1,90 @@
 import React from 'react'
-import { Modal, FormGroup, InputGroup, FormControl, Button } from 'react-bootstrap'
+import { Modal, Form, FormGroup, Col, ControlLabel, FormControl, Button, HelpBlock } from 'react-bootstrap'
 
 export default class StepAdder extends React.Component {
-  state = {type: 'mash',
-           time: '',
-           name: ''}
+  state = {
+    type: 'mash',
+    time: '',
+    name: '',
+    timeValidationState: null
+  }
 
   handleSubmit = (e) => {
     e.preventDefault();
-    this.props.onCloseClick();
-    this.props.onStepSubmit({type: this.state.type, time: this.state.time, name: this.state.name});
+    let timeRegEx = /[0-9]+:[0-5][0-9]:[0-5][0-9]/;
+    let hasValidationErrors = false;
+
+    if(!timeRegEx.test(this.state.time))
+    {
+      this.setState({timeValidationState: 'error'});
+      hasValidationErrors = true;
+    }
+    if(hasValidationErrors)
+    {
+      return;
+    }
+    else
+    {
+      this.props.onCloseClick();
+      this.props.onStepSubmit({ type: this.state.type, time: this.state.time, name: this.state.name });
+    }
   }
 
   setValue = (field, event) => {
-    var object = {};
+    let object = {};
     object[field] = event.target.value;
     this.setState(object);
   }
-  
-  render = () =>  {
+
+
+  render = () => {
     return <div className="static-modal">
-    <Modal.Dialog>
-      <Modal.Header>
-        <Modal.Title>Add Step</Modal.Title>
-      </Modal.Header>
+      <Modal.Dialog>
+        <Modal.Header>
+          <Modal.Title>Add Step</Modal.Title>
+        </Modal.Header>
 
-      <Modal.Body>
-        <form>
-          <FormGroup controlId="formControlsSelectMultiple">
-            <InputGroup>
-            <InputGroup.Addon>
-              Type
-            </InputGroup.Addon>
-              <FormControl componentClass="select" onChange={this.setValue.bind(this,'type')}>
-                <option value="mash">Mash Timer</option>
-                <option value="hop">Hop Timer</option>
-              </FormControl>
-            </InputGroup>
-            <InputGroup>
-            <InputGroup.Addon>
-              Time
-            </InputGroup.Addon>
-              <FormControl type="text" placeholder="HH:MM:SS" onChange={this.setValue.bind(this,'time')}>
-              </FormControl>
-            </InputGroup>
-             <InputGroup>
-            <InputGroup.Addon>
-              Name
-            </InputGroup.Addon>
-              <FormControl type="text" placeholder="STEP NAME" onChange={this.setValue.bind(this,'name')}>
-              </FormControl>
-            </InputGroup>
-          </FormGroup>
-        </form>
-      </Modal.Body>
+        <Modal.Body>
+          <Form horizontal>
+            <FormGroup controlId="type">
+              <Col componentClass={ControlLabel} sm={2}>
+                Type
+              </Col>
+              <Col sm={10}>
+                <FormControl componentClass="select" onChange={this.setValue.bind(this, 'type')}>
+                  <option value="mash">Mash Timer</option>
+                  <option value="hop">Hop Timer</option>
+                </FormControl>
+              </Col>
+            </FormGroup>
 
-      <Modal.Footer>
-        <Button onClick={this.props.onCloseClick}>Close</Button>
-        <Button onClick={this.handleSubmit} bsStyle="primary">Save changes</Button>
-      </Modal.Footer>
+            <FormGroup controlId="time" validationState={this.state.timeValidationState}>
+              <Col componentClass={ControlLabel} sm={2}>
+                Time
+              </Col>
+              <Col sm={10}>
+                <FormControl type="text" placeholder="HH:MM:SS" onChange={this.setValue.bind(this, 'time')} />
+                {this.state.timeValidationState !== null && <HelpBlock>Input must be in the following format - HH:MM:SS</HelpBlock>}
+              </Col>
+            </FormGroup>
 
-    </Modal.Dialog>
-  </div>
+            <FormGroup controlId="stepname">
+              <Col componentClass={ControlLabel} sm={2}>
+                Name
+              </Col>
+              <Col sm={10}>
+                <FormControl type="text" placeholder="STEP NAME" onChange={this.setValue.bind(this, 'name')} />
+              </Col>
+            </FormGroup>
+          </Form>
+        </Modal.Body>
+
+        <Modal.Footer>
+          <Button onClick={this.props.onCloseClick}>Close</Button>
+          <Button onClick={this.handleSubmit} bsStyle="primary">Save changes</Button>
+        </Modal.Footer>
+
+      </Modal.Dialog>
+    </div>
   }
 }
